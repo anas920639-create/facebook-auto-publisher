@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 concurrency:
   group: facebook-auto-publisher
@@ -21,6 +22,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/280305406003/locations/global/workloadIdentityPools/github-actions/providers/github'
+          service_account: 'facebook-publisher@facebook-publisher-506301.iam.gserviceaccount.com'
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -35,7 +42,6 @@ jobs:
 
       - name: Publish next video
         env:
-          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
           FACEBOOK_STORAGE_STATE_B64: ${{ secrets.FACEBOOK_STORAGE_STATE_B64 }}
         run: npm run publish
