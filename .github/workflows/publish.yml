@@ -3,6 +3,7 @@ name: Publish next Facebook video
 on:
   workflow_dispatch:
   schedule:
+    # Jordan (UTC+3): 13:00, 18:00, 22:00
     - cron: '0 10 * * *'
     - cron: '0 15 * * *'
     - cron: '0 19 * * *'
@@ -17,8 +18,12 @@ concurrency:
 
 jobs:
   publish:
+    # Scheduled runs stay disabled until repository variable AUTO_PUBLISH_ENABLED=true.
+    # Manual workflow_dispatch runs are always allowed for testing.
+    if: github.event_name == 'workflow_dispatch' || vars.AUTO_PUBLISH_ENABLED == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,16 +39,38 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install dependencies
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Cache caption model
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: smolvlm2-500m-video-caption-v1
+
+      - name: Install system video tools
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install Node dependencies
         run: npm install
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
+      - name: Install AI caption dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.8.0 torchvision==0.23.0
+          python -m pip install transformers==4.55.3 accelerate==1.10.0 pillow==11.3.0
+
       - name: Publish next video
         env:
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
           FACEBOOK_STORAGE_STATE_B64: ${{ secrets.FACEBOOK_STORAGE_STATE_B64 }}
+          CAPTION_MODEL: HuggingFaceTB/SmolVLM2-500M-Video-Instruct
         run: npm run publish
 
       - name: Save publisher state
