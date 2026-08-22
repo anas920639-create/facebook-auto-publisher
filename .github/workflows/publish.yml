@@ -3,12 +3,9 @@ name: Publish next Facebook video
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 13 * * *'
-      timezone: 'Asia/Amman'
-    - cron: '0 18 * * *'
-      timezone: 'Asia/Amman'
-    - cron: '0 22 * * *'
-      timezone: 'Asia/Amman'
+    - cron: '0 10 * * *'
+    - cron: '0 15 * * *'
+    - cron: '0 19 * * *'
 
 permissions:
   contents: write
