@@ -3,10 +3,10 @@ name: Publish next Facebook video
 on:
   workflow_dispatch:
   schedule:
-    # Jordan (UTC+3): 13:00, 18:00, 22:00
-    - cron: '0 10 * * *'
+    # Jordan (UTC+3): 18:00, 22:00, 3:00
     - cron: '0 15 * * *'
     - cron: '0 19 * * *'
+    - cron: '0 0 * * *'
 
 permissions:
   contents: write
