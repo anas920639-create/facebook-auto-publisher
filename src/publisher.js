@@ -3,7 +3,7 @@ import path from 'node:path';
 import { google } from 'googleapis';
 import { chromium } from 'playwright';
 
-const required = ['GOOGLE_SERVICE_ACCOUNT_JSON', 'GDRIVE_FOLDER_ID', 'FACEBOOK_STORAGE_STATE_B64'];
+const required = ['GDRIVE_FOLDER_ID', 'FACEBOOK_STORAGE_STATE_B64'];
 for (const key of required) {
   if (!process.env[key]) throw new Error(`Missing required environment variable: ${key}`);
 }
@@ -12,9 +12,7 @@ const statePath = path.resolve('state.json');
 const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
 const posted = new Set(state.postedFileIds || []);
 
-const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
 const auth = new google.auth.GoogleAuth({
-  credentials,
   scopes: ['https://www.googleapis.com/auth/drive.readonly'],
 });
 const drive = google.drive({ version: 'v3', auth });
