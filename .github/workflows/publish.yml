@@ -64,7 +64,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.8.0 torchvision==0.23.0
-          python -m pip install transformers==4.55.3 accelerate==1.10.0 pillow==11.3.0
+          python -m pip install transformers==4.55.3 accelerate==1.10.0 pillow==11.3.0 num2words
 
       - name: Publish next video
         env:
